@@ -139,3 +139,72 @@ int total_rec(Registro registros[], int n) {
 
     return registros[n - 1].score + total_rec(registros, n - 1);
 }
+
+/*
+ * Ordena los registros mediante el método burbuja.
+ * Prioriza el score más alto y utiliza el ID ascendente
+ * como criterio secundario cuando dos scores son iguales.
+ */
+void ordenar(Registro registros[], int n) {
+    Registro temporal;
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (registros[j].score < registros[j + 1].score ||
+                (registros[j].score == registros[j + 1].score &&
+                 registros[j].id > registros[j + 1].id)) {
+
+                /* Intercambia los registros cuando no cumplen el orden requerido. */
+                temporal = registros[j];
+                registros[j] = registros[j + 1];
+                registros[j + 1] = temporal;
+            }
+        }
+    }
+}
+
+/*
+ * Ordena una copia de los registros por ID ascendente.
+ * Este orden es necesario para poder aplicar la búsqueda binaria.
+ */
+static void ordenar_por_id(Registro registros[], int n) {
+    Registro temporal;
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (registros[j].id > registros[j + 1].id) {
+                temporal = registros[j];
+                registros[j] = registros[j + 1];
+                registros[j + 1] = temporal;
+            }
+        }
+    }
+}
+
+/*
+ * Busca un ID dentro de un arreglo previamente ordenado.
+ * Reduce el intervalo de búsqueda a la mitad en cada iteración.
+ * Devuelve el score correspondiente o -1 si no encuentra el ID.
+ */
+int buscar(Registro registros[], int n, int id) {
+    int izquierda = 0;
+    int derecha = n - 1;
+
+    while (izquierda <= derecha) {
+        int medio = izquierda + (derecha - izquierda) / 2;
+
+        if (registros[medio].id == id) {
+            return registros[medio].score;
+        }
+
+        /* Si el ID buscado es mayor, continúa en la mitad derecha. */
+        if (registros[medio].id < id) {
+            izquierda = medio + 1;
+        } else {
+            /* Si es menor, continúa en la mitad izquierda. */
+            derecha = medio - 1;
+        }
+    }
+
+    return -1;
+}
