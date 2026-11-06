@@ -21,3 +21,14 @@ typedef struct {
     int score;
     int estado;
 } Registro;
+
+/* Prototipos de las funciones */
+int calcular(int muestras[], int m, int tipo, int p, int *estado);
+
+int total_rec(Registro registros[], int n);
+
+void ordenar(Registro registros[], int n);
+
+int buscar(Registro registros[], int n, int id);
+
+#endif
