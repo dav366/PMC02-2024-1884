@@ -83,3 +83,59 @@ static int nombre_valido(const char nombre[]) {
 
     return 1;
 }
+
+/*
+ * Simula el comportamiento del depósito para una unidad.
+ * Procesa cada muestra, actualiza el volumen y acumula en score
+ * la cantidad que supera la capacidad máxima.
+ * Finalmente determina el estado según el volumen alcanzado.
+ */
+int calcular(int muestras[], int m, int tipo, int p, int *estado) {
+    int volumen = p;
+    int score = 0;
+    int balance;
+    int nuevo;
+
+    /* Procesa las muestras en el orden en que fueron recibidas. */
+    for (int i = 0; i < m; i++) {
+        balance = muestras[i] - 50;
+
+        /* El tipo 1 invierte el efecto de cada muestra. */
+        if (tipo == 1) {
+            balance = -balance;
+        }
+
+        nuevo = volumen + balance;
+
+        /* Controla el límite superior y acumula el desbordamiento. */
+        if (nuevo > CAPACIDAD_MAXIMA) {
+            score += nuevo - CAPACIDAD_MAXIMA;
+            volumen = CAPACIDAD_MAXIMA;
+        }
+        /* Evita que el volumen del depósito sea negativo. */
+        else if (nuevo < 0) {
+            volumen = 0;
+        }
+        /* Si está dentro de los límites, conserva el nuevo volumen. */
+        else {
+            volumen = nuevo;
+        }
+    }
+
+    /* El estado es 1 si el volumen final es al menos 50; de lo contrario, 0. */
+    *estado = (volumen >= 50) ? 1 : 0;
+
+    return score;
+}
+
+/*
+ * Calcula recursivamente la suma de los scores de todas las unidades.
+ * El caso base ocurre cuando no quedan registros por procesar.
+ */
+int total_rec(Registro registros[], int n) {
+    if (n == 0) {
+        return 0;
+    }
+
+    return registros[n - 1].score + total_rec(registros, n - 1);
+}
